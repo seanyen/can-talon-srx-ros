@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(can_talon_srx_ros)
 
-add_definitions(-std=c++11)
+set(CXX_STANDARD 11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -11,12 +11,16 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   message_generation
+  rosconsole
 )
 
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+find_library(PCANBasic_LIBRARY 
+  NAMES PCANBasic.lib
+  PATHS "${CMAKE_CURRENT_SOURCE_DIR}/lib/x64")
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -109,7 +113,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES can_talon_srx_ros
- CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
+ CATKIN_DEPENDS roscpp rospy std_msgs message_runtime rosconsole
 #  DEPENDS system_lib
 )
 
@@ -126,12 +130,22 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+set(CAN_IMPL_SRC src/cansocket_impl.cpp)
+if(WIN32)
+  set(CAN_IMPL_SRC src/canpeak_impl.cpp)
+endif()
+
 # Declare a C++ library
 add_library(can_talon_srx_ros
   src/wpilib_interface.cpp
-  src/cansocket_impl.cpp
   src/wpilib/CanTalonSRX.cpp
   src/wpilib/CtreCanNode.cpp
+  ${CAN_IMPL_SRC}
+)
+
+target_link_libraries(can_talon_srx_ros
+  ${catkin_LIBRARIES}
+  ${PCANBasic_LIBRARY}
 )
 
 ## Add cmake target dependencies of the library

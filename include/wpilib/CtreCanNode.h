@@ -3,7 +3,7 @@
 #include "ctre.h"				//BIT Defines + Typedefs
 #include <map>
 #include <string.h> // memcpy
-#include <sys/time.h>
+#include <chrono>
 class CtreCanNode
 {
 public:
@@ -108,7 +108,7 @@ private:
 	class rxEvent_t{
 		public:
 			uint8_t bytes[8];
-			struct timespec time;
+			std::chrono::system_clock::time_point time;
 			rxEvent_t()
 			{
 				bytes[0] = 0;

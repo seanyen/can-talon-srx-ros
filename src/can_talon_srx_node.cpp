@@ -7,7 +7,12 @@
 #include "wpilib/CanTalonSRX.h"
 
 #include "can_talon_srx/can_base.h"
+
+#ifdef _WIN32
+#include "can_talon_srx/canpeak.h"
+#else
 #include "can_talon_srx/cansocket.h"
+#endif
 
 int main(int argc, char **argv)
 {
@@ -15,7 +20,7 @@ int main(int argc, char **argv)
   auto nh = ros::NodeHandle();
 
   ROS_INFO("setting up CAN interface...");
-  can_talon_srx::CanSocketInterface::Init("can0");
+  can_talon_srx::CanPeakInterface::Init("can0");
   ROS_INFO("CAN interface setup succesful!");
 
   CanTalonSRX testTalon1(1);
